@@ -1,0 +1,97 @@
+---
+layout: post
+title: "Refactoring 101"
+date:   2014-11-03 20:05:00
+categories: jekyll update
+tags: featured
+image:
+---
+
+I have been struggling with getting my code point where I can refactor it appropriately. However, today in class I had a breakthrough. I usually got a little lost and confused somewhere along the way. It’s all about adhering to the rules of refactoring and in my opinion having foresight and out of the box thinking, being creative. I am attending the Ruby on Rails boot camp at [Metis](http://www.thisismetis.com/) in NYC. 
+
+What is refactoring? In short, it’s about making your code less convoluted and stripping any duplicate code, then moving it in to methods or classes so you can call it. It involves asking yourself two questions (There is more to the SOLID principle, but for now we will focus on the first two): 
+
+* - is your code dry (doesn’t repeat itself.)? 
+* - one responsibility, does each class or method handle one thought?
+
+Many programmers disagree as to the point at which to stop refactoring, but that’s a different topic. It’s like a novel: at what point is too much detail about that elf or village? One paragraph? Half a page? Full page? An entire chapter? Ok, I digress. If you stick to  the rules and just keep asking yourself those as you reevaluate your code you will move towards “perfect harmony” with your code. 
+
+In class, we were working on building a database in ruby as a programming exercise. The db was about hotels and their information, which was inconsistently formatted -- a very real world problem. In the hotel initialize method, we pass our info in and then assign into the correct variables. 
+
+Code has been omitted if it does not pertain in to this example. 
+
+{% highlight ruby %} 
+class Hotel 
+ def initialize(info) 
+   @phone_number = info["Phone Number"] 
+   @single_rooms = info["Number of Singles"].strip.gsub(",","").to_i 
+   @double_rooms = info["Number of Doubles"].strip.gsub(",","").to_i 
+ end 
+end 
+{% endhighlight %} 
+
+On the single and double room variables, we have some wet code. Sloppy wet duplicated code (.strip.gsub(",","").to_i). First strip removes empty spaces from our strings, and then with gsub, we can remove commas (1,000 => 1000). Lastly we convert it to a number so we can add it later. 
+
+This is code smell; smells bad. I immediately suggested that we move that code to a new method called clean_number. 
+
+{% highlight ruby %}
+class Hotel 
+ def initialize(info) 
+   @phone_number = info["Phone Number"] 
+   @single_rooms = clean_number(info["Number of Singles"]) 
+   @double_rooms = clean_number(info["Number of Doubles"]) 
+end 
+
+def clean_number(number) 
+   number.strip.gsub(/[^\d+]/, "").strip.to_i 
+ end 
+end 
+{% endhighlight %} 
+
+Now we have a clean number method which takes our info and removes all of the unwanted garbage, reducing it to just Integers. Why call the method clean_number though? We could have called it anything. The name of your refactored methods is actually very important. It makes the code more readable and easy for someone else to understand. I named it clean_number because we are cleaning the numbers just like one cleans a car. We remove the dirt and keep the car. I like what Tute [@tutec](https://twitter.com/tutec) of [thoughtbot](http://thoughtbot.com) said about refactoring, “take out the logic, give it a name, use name instead of logic.” 
+
+Now what about that phone number? It suffers from the same problem as our room numbers. So we can just call clean_number on it, right? Well, that’s fine, but this would now output => (1231231234). That kind of sucks; it’s not very readable. We need to format it. Sounds like it could be another method. 
+
+Let’s  pass our info to a method called phone_format. 
+
+{% highlight ruby %} 
+   @phone_number = phone_number_format(info["Phone Number"]) 
+{% endhighlight %} 
+
+Inside of phone format, we want to clean the number and then format it so it’s readable. We can call clean_number on our number and convert it to a string. Then we can insert our dashes where we want them. 
+
+{% highlight ruby %}
+ def phone_number_format(number) 
+   number = clean_number(number).to_s 
+   number.insert(3,"-").insert(7,"-") 
+ end 
+{% endhighlight %} 
+
+We took this mess.. 
+
+{% highlight ruby %}
+   @phone_number = info["Phone Number"].strip.gsub(",","").insert(3,"-").insert(7,"-") 
+   @single_rooms = info["Number of Singles"].strip.gsub(",","").to_i 
+   @double_rooms = info["Number of Doubles"].strip.gsub(",","").to_i 
+{% endhighlight %} 
+
+...and turned it into this... 
+
+{% highlight ruby %} 
+class Hotel 
+ def initialize(info) 
+   @phone_number = phone_number_format(info["Phone Number"]) 
+   @single_rooms = clean_number(info["Number of Singles"]) 
+   @double_rooms = clean_number(info["Number of Doubles"]) 
+ end 
+
+ def phone_number_format(number) 
+   number = clean_number(number).to_s 
+   number.insert(3,"-").insert(7,"-") 
+ end 
+
+ def clean_number(number) 
+   number.strip.gsub(/[^\d+]/, "").strip.to_i 
+ end 
+end 
+{% endhighlight %}

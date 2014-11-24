@@ -3,9 +3,9 @@ markdown: redcarpet
 highlighter: pygments
 
 # Site settings
-title: "wip"
+title: "W.I.P."
 description: > # this means to ignore newlines until "email:"
-   Thoughts on Web Development(Rails), Game Design, and Life
+   Thoughts on Web Development, Game Design, and Life
 
 email: ChrisCPO@gmail.com
 #blog logo
