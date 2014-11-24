@@ -1,9 +1,9 @@
 ---
 layout: post
 title: "Vim Comments"
-date:   2014-11-03 20:05:00
+date:   2014-11-24 12:00:00
 categories: jekyll update
-tags: featured
+tags: Regular
 image:
 ---
 
