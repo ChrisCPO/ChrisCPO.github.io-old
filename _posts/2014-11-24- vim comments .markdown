@@ -15,14 +15,18 @@ Something totally awesome I just learned in vim is how to comment out a line and
 
 * enter visual mode    “shift” + “ v”
 * highlight block with movement keys 
-* to comment hit “g” then “>”
-* to uncomment hit “g” then “<”
+* to comment hit “g” then ">"
+* to uncomment hit “g” then “<"
+
+note - One cool trick is to do this without hitting the "g" key which then just shifts the lines in the dirrection of the "</>" keys. This is very helpful for those html.erb files which dont like to respond to the "=" key well. 
 
 **single line**
 
-* enter visual mode “v”
+* enter visual mode “v"
 * then hit “g” then “c” 
 * uncomment the line the same way
+
+note - This seams to only work if your cursor is above certian words or if it is at the beginning of the line over nothing, I have found my self using the block comment method for single lines more.
 
 Comments are great for debugging and problem solving but your code should speak for itself, so remember to delete them before you submit that pull request. 
 
